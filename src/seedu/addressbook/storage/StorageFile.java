@@ -46,6 +46,7 @@ public class StorageFile {
     private final JAXBContext jaxbContext;
 
     public final Path path;
+    public boolean isExistBefore;
 
     /**
      * @throws InvalidStorageFilePathException if the default path is invalid
@@ -68,6 +69,7 @@ public class StorageFile {
         if (!isValidPath(path)) {
             throw new InvalidStorageFilePathException("Storage file should end with '.txt'");
         }
+        isExistBefore = isExistNow();
     }
 
     /**
@@ -88,6 +90,10 @@ public class StorageFile {
         /* Note: Note the 'try with resource' statement below.
          * More info: https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
          */
+        if(!isExistNow() && isExistBefore) {
+            throw new StorageOperationException("File not found: " + path);
+        }
+        
         try (final Writer fileWriter =
                      new BufferedWriter(new FileWriter(path.toFile()))) {
 
@@ -95,7 +101,8 @@ public class StorageFile {
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(toSave, fileWriter);
-
+            isExistBefore = isExistNow();
+            
         } catch (IOException ioe) {
             throw new StorageOperationException("Error writing to file: " + path);
         } catch (JAXBException jaxbe) {
@@ -138,11 +145,15 @@ public class StorageFile {
             throw new StorageOperationException("Error parsing file data format");
         } catch (IllegalValueException ive) {
             throw new StorageOperationException("File contains illegal data values; data type constraints not met");
-        }
+        } 
     }
 
     public String getPath() {
         return path.toString();
+    }
+    
+    public boolean isExistNow() {
+        return path.toFile().exists();
     }
 
 }
