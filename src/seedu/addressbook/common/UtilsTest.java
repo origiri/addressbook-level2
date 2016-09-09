@@ -51,13 +51,13 @@ public class UtilsTest {
     
     @Test
     public void elementsAreUnique_noElement() {
-        Collection<Object> emptyList = new ArrayList();
+        Collection<Object> emptyList = new ArrayList<Object>();
         assertTrue(Utils.elementsAreUnique(emptyList));
     }
     
     @Test
     public void elementsAreUnique_allUnique() {
-        Collection<Object> uniqueList = new ArrayList();
+        Collection<Object> uniqueList = new ArrayList<Object>();
         uniqueList.add("same");
         uniqueList.add("different");
         assertTrue(Utils.elementsAreUnique(uniqueList));
@@ -65,10 +65,10 @@ public class UtilsTest {
     
     @Test
     public void elementsAreUnique_noUnique() {
-        Collection<Object> uniqueList = new ArrayList();
-        uniqueList.add("same");
-        uniqueList.add("same");
-        assertFalse(Utils.elementsAreUnique(uniqueList));
+        Collection<Object> noUniqueList = new ArrayList<Object>();
+        noUniqueList.add("same");
+        noUniqueList.add("same");
+        assertFalse(Utils.elementsAreUnique(noUniqueList));
     }
 
 }
